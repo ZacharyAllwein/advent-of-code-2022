@@ -3,6 +3,7 @@ module DaySeven where
 import Util
 import Data.List
 import Data.Maybe
+import Data.Either
 
 --name, size
 
@@ -46,6 +47,16 @@ changeAt f (p:ps) dir
         _ -> dir { children = map (changeAt f ps) (children dir) }
       | otherwise = dir
 
+dirFlatMap :: (Dir -> a) -> Dir -> [a]
+dirFlatMap f dir = case children dir of
+  [] -> [f dir]
+  childs -> [f dir] ++ (concat $ map (dirFlatMap f) (children dir))
+
+totalSize :: Dir -> Int
+totalSize dir = case children dir of
+  [] -> (sum $ (map snd (files dir)))
+  xs -> (sum $ (map snd (files dir))) + (sum $ map totalSize (children dir))
+
 --takes a name and a dir and if a dir with that name exists it will be returned useful for checking things maybe
 subDir :: String -> Dir -> Maybe Dir
 subDir n = listToMaybe . filter ((==n) . name) . children
@@ -64,8 +75,8 @@ current :: FS -> Dir
 current (dir, _:path) = foldl (\x y -> fromJust $ subDir y x) dir path
 
 --mkdir Path sensitive, takes a string and puts it in the FS at the current path
-mkdir :: String -> FS -> FS
-mkdir s (dir, path) = (changeAt (insertDir (Dir s [] [])) path dir, path)
+mkdir :: Dir -> FS -> FS
+mkdir d (dir, path) = (changeAt (insertDir d) path dir, path)
 
 --mkfile like mkdir but for files, wow this is really repetitive could somebody
 --invent HOFs or something
@@ -82,7 +93,16 @@ cd s (dir, path)
   | elem s (map name $ children $ current (dir, path)) = (dir, path ++ [s])
   | otherwise = (dir, path)
 
+applyCommand :: Command -> FS -> FS
+applyCommand (CD s) fs = cd s fs
+applyCommand (LS lso) fs = 
+  foldl
+    (flip mkdir)
+    (foldl (flip mkfile) fs (rights lso))
+    (lefts lso)
 
+readParsed :: [Command] -> FS -> FS
+readParsed coms fs = foldl (flip applyCommand) fs coms
 
 --all hail root
 root :: Dir
@@ -92,17 +112,11 @@ root = Dir "/" [] []
 fs :: FS
 fs = (root, ["/"])
 
---this is how you're supposed to test right??
-test = 
-    cd "jerk"
-  $ mkdir "jerk"
-  $ mkfile ("check.txt", 100000)
-  $ cd "hello"
-  $ mkfile ("hello.txt", 0)
-  $ mkdir "hello"
-  $ mkdir "world" 
-  $ mkdir "test" fs
+
+daySevenMain :: [String] -> Int
+daySevenMain = sum . filter (<=100000) . dirFlatMap totalSize . fst . (flip readParsed) fs . parse
 
 
-daySevenMain :: [String] -> [Command]
-daySevenMain = parse
+
+
+
