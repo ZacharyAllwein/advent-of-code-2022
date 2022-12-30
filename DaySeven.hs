@@ -114,9 +114,8 @@ fs = (root, ["/"])
 
 
 daySevenMain :: [String] -> Int
-daySevenMain = sum . filter (<=100000) . dirFlatMap totalSize . fst . (flip readParsed) fs . parse
-
-
-
-
-
+daySevenMain ss = 
+    minimum 
+  $ filter (>=(30000000 - (70000000 - totalSize dir))) 
+  $ (dirFlatMap totalSize) dir
+  where (dir, path) = (flip readParsed) fs $ parse ss
