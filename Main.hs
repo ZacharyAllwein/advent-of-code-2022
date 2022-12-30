@@ -1,12 +1,12 @@
 module Main where
 
-import DaySix
+import DaySeven
 
 
 main :: IO ()
 main = do
   content <- readFile "data.txt"
   testContent <- readFile "sample.txt"
-  print (daySixMain ( content))
-  print (daySixMain (testContent))
+  print (daySevenMain (lines content))
+  print (daySevenMain (lines testContent))
 

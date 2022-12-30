@@ -6,6 +6,11 @@ splitOn s l = case dropWhile (==s) l of
   s' -> w : splitOn s s''
     where (w, s'') = break (==s) s'
 
+breakAll :: (Eq a) => (a -> Bool) -> [a] -> [[a]]
+breakAll _ [] = []
+breakAll f (l:ls) = (l : w) : breakAll f s
+  where (w, s) = break f ls
+
 windows :: Int -> [a] -> [[a]]
 windows a bs =
   if length bs < a
