@@ -17,6 +17,8 @@ windows a bs =
   then []
   else take a bs : windows a (drop a bs)
 
+twoList (a, b) = [a, b]
+
 twoTuple :: [a] -> (a, a)
 twoTuple [a, b] = (a, b)
 
