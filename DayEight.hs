@@ -42,9 +42,6 @@ directions (i, j, b) xs =
    dirSplit i (vertSlice j xs) ++ dirSplit j (xs !! i))
 
 
-
-test = windows 10 [1..100]
-
 dayEightMain :: [String] -> Int
 dayEightMain ss = maximum $ map (uncurry scoreAll) $ map ((flip directions) x) $ enum2D x
   where x = parse ss
