@@ -20,7 +20,7 @@ score a (x:xs)
 visibleAny :: Ord a => a -> [[a]] -> Bool
 visibleAny = any . visible
 
-scoreAll :: Int -> [[Int]] -> Int
+scoreAll :: Ord a => a -> [[a]] -> Int
 scoreAll e [as, bs, cs, ds] = 
   foldl (*) 1 $ map (score e) [reverse as, bs, reverse cs, ds]
 

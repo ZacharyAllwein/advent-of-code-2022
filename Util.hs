@@ -48,3 +48,9 @@ sequences a bs =
 allUnique :: (Eq a) => [a] -> Bool
 allUnique [] = True
 allUnique (x:xs) = (not $ elem x xs) && allUnique xs
+
+closer :: (Enum a, Ord a) => a -> a -> a
+closer a b
+  | a == b = a
+  | a < b = succ a
+  | a > b = pred a
